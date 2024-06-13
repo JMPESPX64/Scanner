@@ -10,9 +10,9 @@ sudo apt install -y jq zip unzip
 sudo apt install -y ruby-full
 sudo apt install -y libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev ruby-dev build-essential libgmp-dev zlib1g-dev
 sudo apt install -y build-essential libssl-dev libffi-dev python-dev
-sudo apt install -y python-setuptools
+sudo apt install -y python3-setuptools
 sudo apt install -y libldns-dev
-sudo apt install python3-pip
+sudo apt install python3-pip -y
 sudo apt install -y python-pip
 sudo apt install -y python3-dnspython
 sudo apt install -y git
