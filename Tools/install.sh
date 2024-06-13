@@ -2,6 +2,7 @@
 apt update
 apt install -y moreutils
 apt install -y snapd
+apt install make gcc -y
 apt install sudo -y
 sudo apt install -y libcurl4-openssl-dev tar
 sudo apt install -y libssl-dev
