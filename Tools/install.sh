@@ -112,3 +112,10 @@ go install github.com/d3mondev/puredns/v2@latest
 go install -v github.com/projectdiscovery/notify/cmd/notify@latest
 nuclei -update-templates
 cp /root/go/bin/* /usr/local/bin/
+
+# Start doxycannon
+cd /root/tools/ElKraken/Tools/doxycannon
+python3 doxycannon.py --build
+sleep 10
+tmux new-session -d -s doxycannon "python3 doxycannon.py --single"
+sleep 10
