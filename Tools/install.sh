@@ -2,7 +2,7 @@
 apt update
 apt install -y moreutils
 apt install -y snapd
-apt install make gcc -y
+apt install make gcc docker.io -y
 apt install sudo -y
 sudo apt install -y libcurl4-openssl-dev tar
 sudo apt install -y libssl-dev
@@ -118,5 +118,5 @@ cp /root/go/bin/* /usr/local/bin/
 cd /root/tools/ElKraken/Tools/doxycannon
 python3 doxycannon.py --build
 sleep 10
-tmux new-session -d -s doxycannon "python3 doxycannon.py --single"
+tmux new-session -d -s doxycannon "python3 /root/tools/ElKraken/Tools/doxycannon/doxycannon.py --single"
 sleep 10
