@@ -2,7 +2,7 @@
 domain="$1"
 proxy="socks5://127.0.0.1:1337"
 
-mkdir -p /root/$domain/{vulns,wayback_data,httpx_info,subdomains,ports,aquatone,test_vulns}
+mkdir -p /root/$domain/{vulns,wayback_data,httpx_info,subdomains,fuzzing,ports,aquatone,test_vulns}
 
 echo "Subdomain enumeration on $domain" | notify -bulk -silent
 python3 ~/tools/SubList3r/sublist3r.py -d $domain -o /root/$domain/subdomains/subdomains.txt
