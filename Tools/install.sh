@@ -92,7 +92,6 @@ mv /root/tools/Gf-Patterns/*.json /root/.gf
 # Custom scripts
 git clone https://github.com/R-s0n/Custom_Vuln_Scan_Templates /root/tools/Custom_Vuln_Scan_Templates
 
-
 # Go packages
 go install -v github.com/projectdiscovery/chaos-client/cmd/chaos@latest
 #go install github.com/Emoe/kxss@latest
@@ -111,12 +110,13 @@ go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
 go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 go install github.com/d3mondev/puredns/v2@latest
 go install -v github.com/projectdiscovery/notify/cmd/notify@latest
-nuclei -update-templates
 cp /root/go/bin/* /usr/local/bin/
+nuclei -update-templates
 
 # Start doxycannon
 cd /root/tools/ElKraken/Tools/doxycannon
+sleep 1
 python3 doxycannon.py --build
-sleep 10
-tmux new-session -d -s doxycannon "python3 /root/tools/ElKraken/Tools/doxycannon/doxycannon.py --single"
-sleep 10
+sleep 5
+tmux new-session -d -s doxycannon "python3 doxycannon.py --single"
+sleep 5
