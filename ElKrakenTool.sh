@@ -70,7 +70,7 @@ nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -p $proxy -t /root/tools
 echo -e "Nuclei Rs0n results number -> $(wc -l < /root/$domain/vulns/nuclei_custom.txt)" | notify -bulk -silent
 
 # Dirsearch
-dirsearch -t 25 -exclude 403,401,404,400 -H "X-Forwarded-For: 127.0.0.1" --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o /root/$domain/fuzzing/dirsearch.csv
+dirsearch -w /root/tools/ElKraken/Tools/custom_wordlist.txt -t 30 -exclude 403,401,404,400 -H "X-Forwarded-For: 127.0.0.1" --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color -o /root/$domain/fuzzing/dirsearch.txt
 
 # Running Corsy
 echo "Running Corsy on $domain" | notify -bulk -silent
