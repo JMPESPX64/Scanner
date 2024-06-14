@@ -39,6 +39,11 @@ cat /root/$domain/wayback_data/*.txt | gf xss | qsreplace 'FUZZ' | sort -u | uro
 cat /root/$domain/wayback_data/*.txt | gf ssrf | qsreplace "$BURP_COLLABORATOR" | sort -u | uro | tee -a /root/$domain/test_vulns/ssrf.txt
 cat /root/$domain/wayback_data/*.txt | grep "=" | qsreplace 'FUZZ' | sort -u | uro | httpx -silent | tee -a /root/$domain/test_vulns/params.txt
 
+# Kxss
+echo "Running Kxss on $domain" | notify -bulk -silent
+cat /root/$domain/test_vulns/xss.txt | kxss | grep -v "\[\]" | tee -a /root/$domain/vulns/xss.txt
+echo "$(cat /root/$domain/vulns/xss.txt | grep '<' | wc -l) Posible XSS on $domain" | notify -bulk -silent
+
 # Fuzzing templates
 echo -e "Checking for multiple vulnerabilities" | notify -bulk -silent
 nuclei -l /root/$domain/test_vulns/params.txt -p $proxy -t /root/tools/fuzzing-templates -o /root/$domain/vulns/fuzzing_templates.txt -dast -rl 40 -c 10 -H "X-Forwarded-For: 127.0.0.1"
@@ -56,7 +61,7 @@ echo -e "Nuclei secrets results -> $(wc -l < /root/$domain/vulns/potential_secre
 
 # Nuclei High
 echo "Checking for high vulns with nuclei on $domain" | notify -bulk -silent
-nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -serverity high -rl 50 -c 10 -p $proxy -H "X-Hackerone: user" -H "X-Forwarded-For: 127.0.0.1" -o /root/$domain/vulns/high_vulns.txt
+nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -severity high -rl 50 -c 10 -p $proxy -H "X-Hackerone: user" -H "X-Forwarded-For: 127.0.0.1" -o /root/$domain/vulns/high_vulns.txt
 echo "The high scan is finished -> $(wc -l < /root/$domain/vulns/high_vulns.txt) results" | notify -bulk -silent
 
 # Nuclei Rs0n
@@ -65,7 +70,7 @@ nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -p $proxy -t /root/tools
 echo -e "Nuclei Rs0n results number -> $(wc -l < /root/$domain/vulns/nuclei_custom.txt)" | notify -bulk -silent
 
 # Dirsearch
-dirsearch -w /root/tools/dirsearch/custom_wordlist.txt -t 50 -exclude 403,401,404,400 -H "X-Forwarded-For: 127.0.0.1" --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o /root/$domain/fuzzing/dirsearch.csv
+dirsearch -t 25 -exclude 403,401,404,400 -H "X-Forwarded-For: 127.0.0.1" --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o /root/$domain/fuzzing/dirsearch.csv
 
 # Running Corsy
 echo "Running Corsy on $domain" | notify -bulk -silent
