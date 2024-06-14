@@ -83,15 +83,21 @@ cat /root/$domain/httpx_info/alive_subdomains.txt | dnsx -a -ro -silent | naabu 
 echo -e "Naabu results number -> $(wc -l < /root/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
 
 # Screenshots
+echo "Taking screenshots on $domain" | notify -bulk -silent
 cat /root/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/bin/chromium -out /root/$domain/aquatone
-sleep 10
 
 # Kill doxycannon after scan
-tmux kill-session -t doxycannon
-cd /root/tools/ElKraken/Tools/doxycannon
-python3 doxycannon.py --down
-docker rm $(docker ps -a -q)
-docker rmi $(docker images -q)
+if [ "$(tail -n 1 /root/tools/domains.txt)" == "$domain" ] ; then
+  tmux kill-session -t doxycannon
+  cd /root/tools/ElKraken/Tools/doxycannon
+  python3 doxycannon.py --down
+  sleep 1
+  docker rm $(docker ps -a -q)
+  sleep 1
+  docker rmi $(docker images -q)
+else
+  echo ""
+fi
 
 echo "The scan has finished on $domain" | notify -bulk -silent
 
