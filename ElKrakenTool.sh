@@ -41,7 +41,7 @@ cat /root/$domain/wayback_data/*.txt | grep "=" | qsreplace 'FUZZ' | sort -u | u
 
 # Fuzzing templates
 echo -e "Checking for multiple vulnerabilities" | notify -bulk -silent
-nuclei -l /root/$domain/test_vulns/params.txt -p $proxy -t /root/tools/fuzzing-templates -o /root/$domain/vulns/fuzzing_templates.txt -rl 40 -c 10 -H "X-Forwarded-For: 127.0.0.1"
+nuclei -l /root/$domain/test_vulns/params.txt -p $proxy -t /root/tools/fuzzing-templates -o /root/$domain/vulns/fuzzing_templates.txt -dast -rl 40 -c 10 -H "X-Forwarded-For: 127.0.0.1"
 echo -e "Results for multiple vulnerabilies -> $(wc -l < /root/$domain/vulns/fuzzing_templates.txt) results" | notify -bulk -silent
 
 # Subdomain takeover 
