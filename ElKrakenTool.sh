@@ -35,9 +35,9 @@ cat /root/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -silent | te
 
 # Gf patterns
 echo -e "Using GF for filter data on $domain" | notify -bulk -silent
-cat /root/$domain/wayback_data/*.txt | gf xss | qsreplace 'FUZZ' | sort -u | tee -a /root/$domain/test_vulns/xss.txt
-cat /root/$domain/wayback_data/*.txt | gf ssrf | qsreplace "$BURP_COLLABORATOR" | sort -u | tee -a /root/$domain/test_vulns/ssrf.txt
-cat /root/$domain/wayback_data/*.txt | grep "=" | qsreplace 'FUZZ' | sort -u | httpx -silent | tee -a /root/$domain/test_vulns/params.txt
+cat /root/$domain/wayback_data/*.txt | gf xss | qsreplace 'FUZZ' | sort -u | uro | tee -a /root/$domain/test_vulns/xss.txt
+cat /root/$domain/wayback_data/*.txt | gf ssrf | qsreplace "$BURP_COLLABORATOR" | sort -u | uro | tee -a /root/$domain/test_vulns/ssrf.txt
+cat /root/$domain/wayback_data/*.txt | grep "=" | qsreplace 'FUZZ' | sort -u | uro | httpx -silent | tee -a /root/$domain/test_vulns/params.txt
 
 # Fuzzing templates
 echo -e "Checking for multiple vulnerabilities" | notify -bulk -silent
