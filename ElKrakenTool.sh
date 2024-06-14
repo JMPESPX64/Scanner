@@ -32,6 +32,10 @@ cat /root/$domain/httpx_info/alive_subdomains.txt | gau --threads 15 --subs 2>/d
 cat /root/$domain/httpx_info/alive_subdomains.txt | waybackurls | tee -a /root/$domain/wayback_data/waybackurls.txt
 waymore -i $domain -mode U -oU /root/$domain/wayback_data/waymore.txt
 cat /root/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -silent | tee -a /root/$domain/wayback_data/katana.txt
+grep -v -f /root/tools/blacklist.txt /root/$domain/wayback_data/gau.txt | sponge /root/$domain/wayback_data/gau.txt
+grep -v -f /root/tools/blacklist.txt /root/$domain/wayback_data/waybackurls.txt | sponge /root/$domain/wayback_data/waybackurls.txt
+grep -v -f /root/tools/blacklist.txt /root/$domain/wayback_data/waymore.txt | sponge /root/$domain/wayback_data/waymore.txt
+grep -v -f /root/tools/blacklist.txt /root/$domain/wayback_data/katana.txt | sponge /root/$domain/wayback_data/katana.txt
 
 # Gf patterns
 echo -e "Using GF for filter data on $domain" | notify -bulk -silent
