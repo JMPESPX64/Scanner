@@ -54,6 +54,11 @@ cat /root/$domain/wayback_data/gau.txt /root/$domain/wayback_data/katana.txt /ro
 nuclei -l /root/$domain/wayback_data/js-json.txt -t exposures -o /root/$domain/vulns/potential_secrets.txt -H "X-Hackerone: user" -H "X-Forwarded-For: 127.0.0.1"
 echo -e "Nuclei secrets results -> $(wc -l < /root/$domain/vulns/potential_secrets.txt)" | notify -bulk -silent
 
+# Nuclei High
+echo "Checking for high vulns with nuclei on $domain" | notify -bulk -silent
+nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -serverity high -rl 50 -c 10 -p $proxy -H "X-Hackerone: user" -H "X-Forwarded-For: 127.0.0.1" -o /root/$domain/vulns/high_vulns.txt
+echo "The high scan is finished -> $(wc -l < /root/$domain/vulns/high_vulns.txt) results" | notify -bulk -silent
+
 # Nuclei Rs0n
 echo "Checking with custom templates on $domain with nuclei" | notify -bulk -silent
 nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -p $proxy -t /root/tools/Custom_Vuln_Scan_Templates/Nuclei -o /root/$domain/vulns/nuclei_custom.txt -rl 3 -c 5 -H "X-Forwarded-For: 127.0.0.1"
