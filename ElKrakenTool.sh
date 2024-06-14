@@ -78,3 +78,14 @@ echo -e "Naabu results number -> $(wc -l < /root/$domain/ports/naabu_ports.txt)"
 
 # Screenshots
 cat /root/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/bin/chromium -out /root/$domain/aquatone
+sleep 10
+
+# Kill doxycannon after scan
+tmux kill-session -t doxycannon
+cd /root/tools/ElKraken/Tools/doxycannon
+python3 doxycannon.py --down
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
+
+echo "The scan has finished on $domain" | notify -bulk -silent
+
