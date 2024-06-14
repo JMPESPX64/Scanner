@@ -28,7 +28,7 @@ echo -e "$(wc -l < /root/$domain/httpx_info/alive_subdomains.txt) alive subdomai
 
 # URLS
 echo "Checking URLS with GAU on $domain" | notify -bulk -silent
-cat /root/$domain/httpx_info/alive_subdomains.txt | gau --threads 16 --subs 2>/dev/null | tee -a /root/$domain/wayback_data/gau.txt
+cat /root/$domain/httpx_info/alive_subdomains.txt | gau --threads 15 --subs 2>/dev/null | tee -a /root/$domain/wayback_data/gau.txt
 cat /root/$domain/httpx_info/alive_subdomains.txt | waybackurls | tee -a /root/$domain/wayback_data/waybackurls.txt
 waymore -i $domain -mode U -oU /root/$domain/wayback_data/waymore.txt
 cat /root/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -silent | tee -a /root/$domain/wayback_data/katana.txt
@@ -59,7 +59,7 @@ nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -p $proxy -t /root/tools
 echo -e "Nuclei Rs0n results number -> $(wc -l < /root/$domain/vulns/nuclei_custom.txt)" | notify -bulk -silent
 
 # Dirsearch
-dirsearch -w /root/tools/dirsearch/custom_wordlist.txt -t 50 -exclude 403,401,404,400 --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o /root/$domain/fuzzing/dirsearch.csv
+dirsearch -w /root/tools/dirsearch/custom_wordlist.txt -t 50 -exclude 403,401,404,400 -H "X-Forwarded-For: 127.0.0.1" --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color --format=csv -o /root/$domain/fuzzing/dirsearch.csv
 
 # Running Corsy
 echo "Running Corsy on $domain" | notify -bulk -silent
@@ -77,4 +77,4 @@ cat /root/$domain/httpx_info/alive_subdomains.txt | dnsx -a -ro -silent | naabu 
 echo -e "Naabu results number -> $(wc -l < /root/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
 
 # Screenshots
-cat /root/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/bin/chrome -out /root/$domain/aquatone
+cat /root/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/bin/chromium -out /root/$domain/aquatone
