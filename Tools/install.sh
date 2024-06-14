@@ -113,6 +113,11 @@ go install -v github.com/projectdiscovery/notify/cmd/notify@latest
 cp /root/go/bin/* /usr/local/bin/
 nuclei -update-templates
 
+# Change firewall
+iptables -A INPUT -p tcp --dport 1337 -s 127.0.0.1 -j ACCEPT
+iptables -A INPUT -p tcp --dport 1337 -j DROP
+sleep 2
+
 # Start doxycannon
 cd /root/tools/ElKraken/Tools/doxycannon
 sleep 1
