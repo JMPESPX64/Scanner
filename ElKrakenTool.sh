@@ -96,6 +96,7 @@ cat /root/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/
 
 # Kill doxycannon after scan
 if [ "$(tail -n 1 /root/tools/domains.txt)" == "$domain" ] ; then
+  echo -e "Killing doxycannon" | notify -bulk -silent
   tmux kill-session -t doxycannon
   cd /root/tools/ElKraken/Tools/doxycannon
   python3 doxycannon.py --down
