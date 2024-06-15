@@ -75,6 +75,7 @@ echo -e "Nuclei Rs0n results number -> $(wc -l < /root/$domain/vulns/nuclei_cust
 
 # Dirsearch
 dirsearch -l /root/$domain/httpx_info/alive_subdomains.txt --proxy $proxy -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json -H "X-Forwarded-For: 127.0.0.1" --deep-recursive --force-recursive --exclude-sizes=0B --random-agent --full-url -o /root/$domain/fuzzing/dirsearch.txt
+
 # Running Corsy
 echo "Running Corsy on $domain" | notify -bulk -silent
 python3 ~/tools/Corsy/corsy.py -i /root/$domain/httpx_info/alive_subdomains.txt -o /root/$domain/vulns/cors.json
