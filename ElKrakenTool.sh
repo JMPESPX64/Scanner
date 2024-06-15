@@ -64,8 +64,8 @@ nuclei -l /root/$domain/wayback_data/js-json.txt -t exposures -o /root/$domain/v
 echo -e "Nuclei secrets results -> $(wc -l < /root/$domain/vulns/potential_secrets.txt)" | notify -bulk -silent
 
 # Nuclei High
-echo "Checking for high vulns with nuclei on $domain" | notify -bulk -silent
-nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -severity high -rl 50 -c 10 -p $proxy -H "X-Hackerone: user" -H "X-Forwarded-For: 127.0.0.1" -o /root/$domain/vulns/high_vulns.txt
+echo "Checking CVES with nuclei on $domain" | notify -bulk -silent
+nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -t cves -severity high -rl 50 -c 10 -p $proxy -H "X-Hackerone: user" -H "X-Forwarded-For: 127.0.0.1" -o /root/$domain/vulns/high_vulns.txt
 echo "The high scan is finished -> $(wc -l < /root/$domain/vulns/high_vulns.txt) results" | notify -bulk -silent
 
 # Nuclei Rs0n
@@ -74,8 +74,7 @@ nuclei -l /root/$domain/httpx_info/alive_subdomains.txt -p $proxy -t /root/tools
 echo -e "Nuclei Rs0n results number -> $(wc -l < /root/$domain/vulns/nuclei_custom.txt)" | notify -bulk -silent
 
 # Dirsearch
-dirsearch -w /root/tools/ElKraken/Tools/custom_wordlist.txt -t 30 -exclude 403,401,404,400 -H "X-Forwarded-For: 127.0.0.1" --proxy $proxy -l /root/$domain/httpx_info/alive_subdomains.txt --deep-recursive -R 4 --crawl --full-url  --no-color -o /root/$domain/fuzzing/dirsearch.txt
-
+dirsearch -l /root/$domain/httpx_info/alive_subdomains.txt --proxy $proxy -e conf,config,bak,backup,swp,old,db,sql,asp,aspx,aspx~,asp~,py,py~,rb,rb~,php,php~,bak,bkp,cache,cgi,conf,csv,html,inc,jar,js,json,jsp,jsp~,lock,log,rar,old,sql,sql.gz,sql.zip,sql.tar.gz,sql~,swp,swp~,tar,tar.bz2,tar.gz,txt,wadl,zip,log,xml,js,json -H "X-Forwarded-For: 127.0.0.1" --deep-recursive --force-recursive --exclude-sizes=0B --random-agent --full-url -o /root/$domain/fuzzing/dirsearch.txt
 # Running Corsy
 echo "Running Corsy on $domain" | notify -bulk -silent
 python3 ~/tools/Corsy/corsy.py -i /root/$domain/httpx_info/alive_subdomains.txt -o /root/$domain/vulns/cors.json
