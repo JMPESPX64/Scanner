@@ -32,7 +32,7 @@ grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | 
 cat /root/results/$domain/wayback_data/all-urls.txt | gf xss | qsreplace 'FUZZ' | sort -u | uro | Gxss -p TEST -o /root/results/$domain/test_vulns/XSS.txt
 dalfox file /root/results/$domain/test_vulns/XSS.txt --waf-evasion --skip-mining-all --skip-headless -H "X-Forwarded-For: 127.0.0.1" --only-poc --proxy $proxy -o /root/results/$domain/vulns/XSS.txt
 
-#LFI
+#LFI (Paramspider)
 
 #SQLI
 
