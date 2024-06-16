@@ -10,6 +10,7 @@ chaos -d $domain -silent | grep "\.$domain$" | sed 's/*.//' | sort -u | anew /ro
 subfinder -d $domain -all -silent | anew /root/results/$domain/subdomains/subdomains.txt
 assetfinder $domain --subs-only | grep "\.$domain$" | sed 's/*.//' | sort -u | anew /root/results/$domain/subdomains/subdomains.txt
 amass enum -passive -d $domain -noalts -norecursive | grep "\.$domain$" | sort -u | anew /root/results/$domain/subdomains/subdomains.txt
+echo "$domain" | anew /root/results/$domain/subdomains/subdomains.txt
 
 # Subdomain bruteforce (Puredns)
 echo -e "Brute force with puredns on $domain" | notify -bulk -silent
@@ -31,7 +32,7 @@ grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | 
 # Php endpoints
 echo -e "Getting PHP endpoints on $domain" | notify -bulk -silent
 cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.php$" | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
-echo -e "Total of PHP endpoints -> $(wc -l < /root/results/$domain/fuzzing/php-endpoints)"
+echo -e "Total of PHP endpoints -> $(wc -l < /root/results/$domain/fuzzing/php-endpoints)" | notify -bulk -silent
 
 # Vulnerabilities
 
