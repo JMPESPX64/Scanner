@@ -26,19 +26,28 @@ waymore -i $domain -mode U -oU /root/results/$domain/wayback_data/waymore.txt
 cat /root/results/$domain/httpx_output/alive_subdomains.txt | katana -jc -d 5 -ef png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/katana.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | tee -a /root/results/$domain/wayback_data/all-urls.txt
 
+# Php endpoints
+cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.php$" | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
+
 # Vulnerabilities
 
 # XSS
-cat /root/results/$domain/wayback_data/all-urls.txt | gf xss | qsreplace 'FUZZ' | sort -u | uro | Gxss -p TEST -o /root/results/$domain/test_vulns/XSS.txt
+echo -e "Running dalfox on $domain" | notify -bulk -silent
+cat /root/results/$domain/wayback_data/all-urls.txt | gf xss | uro | Gxss -p FUZZ -o /root/results/$domain/test_vulns/XSS.txt
 dalfox file /root/results/$domain/test_vulns/XSS.txt --waf-evasion --skip-mining-all --skip-headless -H "X-Forwarded-For: 127.0.0.1" --only-poc --proxy $proxy -o /root/results/$domain/vulns/XSS.txt
+echo -e "The dalfox scan have finished -> $(wc -l < /root/results/$domain/vulns/XSS.txt) results"
+
+# Secrets
+cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.js$" | sort -u | httpx -silent | nuclei -t exposures -o /root/results/$domain/vuls/exposures.txt
 
 #LFI (Paramspider)
+#cat /root/results/$domain/wayback_data/all-urls.txt | gf lfi | qsreplace 'FUZZ' | anew lfi-tmp.txt
+#ffuf -w /root/tools/lfi-wordlist.txt 
 
 #SQLI
 
 #SSRF
 
-# Fuzzing
+# Subdomain takeover
 
-# Secrets
-cat /root/results/$domain/wayback_data/*.txt | grep "\.js$" | sort -u | httpx -silent | nuclei -t exposures -o /root/results/$domain/vuls/exposures.txt
+# Fuzzing
