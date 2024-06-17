@@ -3,6 +3,8 @@
 domain="$1"
 proxy="socks5://127.0.0.1:1337"
 
+mkdir -p /root/results/$domain/{wayback_data,vulns,ports,aquatone,subdomains,httpx_info,fuzzing,technologies}
+
 # Subdomain enumeration
 echo -e "Listing subdomains on $domain" | notify -bulk -silent
 python3 ~/tools/SubList3r/sublist3r.py -d $domain -o /root/results/$domain/subdomains/subdomains.txt
@@ -29,9 +31,7 @@ waymore -i $domain -mode U -oU /root/results/$domain/wayback_data/waymore.txt
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -ef png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/katana.txt
 paramspider -l /root/results/$domain/httpx_info/alive_subdomains.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | anew /root/results/$domain/wayback_data/all-urls.txt
-
-# SSRF
-
+cat /root/tools/Paramspider/domains/*.txt | anew /root/results/$domain/wayback_data/all-urls.txt
 
 # PHP endpoints
 echo -e "Getting PHP endpoints on $domain" | notify -bulk -silent
@@ -58,7 +58,7 @@ echo "Takeovers -> $(wc -l < /root/results/$domain/vulns/takeovers.txt)" | notif
 
 # SQLI
 echo -e "Listing sql injections on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | gf sqli | qsreplace 'FUZZ' | sort -u | uro | tee -a sqli.tmp
+cat /root/results/$domain/wayback_data/all-urls.txt | gf sqli | qsreplace 'FUZZ' | uro | tee -a sqli.tmp
 sqlmap -m sqli.tmp --dbs --proxy=$proxy --batch --risk 3 --level 5 | tee -a /root/results/$domain/vulns/sql_injection.txt
 echo -e "SQLMAP has finished -> $(wc -l < /root/results/$domain/vulns/sql_injection.txt)" | notify -bulk -silent
 rm sqli.tmp
@@ -68,8 +68,33 @@ echo -e "Scanning ports with naabu on $domain" | notify -bulk -silent
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | dnsx -a -ro | naabu -silent -top-ports 1000 -exclude-ports 80,443,21,22,25 -o /root/results/$domain/ports/naabu_ports.txt
 echo -e "Naabu has finished on $domain -> $(wc -l < /root/results/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
 
+# Nuclei tech detect
+echo -e "Running Nuclei for tech detect on $domain" | notify -bulk -silent
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | nuclei -t /root/tools/tech-detect.yaml -rl 40 -c 20 -o /root/results/$domain/technologies/nuclei_scan.txt
+
+# Dirsearch
+echo -e "Running dirsearch on $domain" | notify -bulk -silent
+dirsearch -w /root/tools/ElKraken/Tools/custom_wordlist.txt -l /root/results/$domain/httpx_info/alive_subdomains.txt --proxy=$proxy -t 40 -exclude 403,401,404,400 -o /root/results/$domain/fuzzing/dirsearch.txt
+echo -e "Dirsearch has finished on $domain -> $(wc -l < /root/results/$domain/fuzzing/dirsearch.txt) results" | notify -bulk silent
+
+# Corsy
+echo "Running Corsy on $domain" | notify -bulk -silent
+python3 /root/tools/Corsy/corsy.py -i /root/results/$domain/httpx_info/alive_subdomains.txt -o /root/results/$domain/vulns/cors.json
+
+# CRLFUZZ 
+crlfuzz -l /root/results/$domain/httpx_info/alive_subdomains.txt -o /root/results/$domain/vulns/crlf.txt
+
 # Screenshots
 echo "Taking screenshots on $domain" | notify -bulk -silent
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/bin/chromium -out /root/results/$domain/aquatone
 echo "The scan has finished on $domain"
 
+if [ "$(tail -n 1 /root/tools/domains.txt)" == "$domain" ] ; then 
+  cd /root/tools/ElKraken/Tools/doxycannon
+  python3 doxycannon.py --down
+  sleep 1
+  docker rm $(docker ps -a -q)
+  docker rmi $(docker images -q)
+else
+  echo ""
+fi
