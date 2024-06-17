@@ -83,6 +83,12 @@ git clone https://github.com/s0md3v/Corsy /root/tools/Corsy
 cd /root/tools/Corsy
 pip3 install -r requirements.txt --break-system-packages
 
+# paramspider
+git clone https://github.com/devanshbatham/paramspider /root/tools/Paramspider
+cd /root/tools/Paramspider
+sed -i 's/results_dir = \"results\"/results_dir = \"\/root\/tools\/Paramspider\"/' /root/tools/Paramspider/paramspider/main.py
+pip3 install . --break-system-packages
+
 
 # GF-PATTERNS
 mkdir /root/.gf
@@ -107,6 +113,8 @@ go install github.com/tomnomnom/qsreplace@latest
 #go install -v github.com/LukaSikic/subzy@latest
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+go install github.com/hahwul/dalfox/v2@latest
+go install github.com/KathanP19/Gxss@latest
 go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 go install github.com/d3mondev/puredns/v2@latest
 go install -v github.com/projectdiscovery/notify/cmd/notify@latest
