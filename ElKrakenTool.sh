@@ -20,21 +20,20 @@ rm puredns.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/subdomains/subdomains.txt | sponge /root/results/$domain/subdomains/subdomains.txt
 
 # Alive subdomains
-httpx -l /root/results/$domain/subdomains/subdomains.txt -t 100 -silent | tee -a /root/results/$domain/httpx_output/alive_subdomains.txt
+httpx -l /root/results/$domain/subdomains/subdomains.txt -t 100 -silent | tee -a /root/results/$domain/httpx_info/alive_subdomains.txt
 
 # Wayback Data
 cat /root/results/$domain/httpx_output/alive_subdomains.txt | gau --threads 16 --subs --blacklist png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/gau.txt
 cat /root/results/$domain/httpx_output/alive_subdomains.txt | waybackurls | tee -a /root/results/$domain/wayback_data/waybackurls.txt
 waymore -i $domain -mode U -oU /root/results/$domain/wayback_data/waymore.txt
-cat /root/results/$domain/httpx_output/alive_subdomains.txt | katana -jc -d 5 -ef png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/katana.txt
-grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | tee -a /root/results/$domain/wayback_data/all-urls.txt
-
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -ef png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/katana.txt
+paramspider -l /root/results/$domain/httpx_info/alive_subdomains.txt
+grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | anew /root/results/$domain/wayback_data/all-urls.txt
+ 
 # Php endpoints
 echo -e "Getting PHP endpoints on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.php$" | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
+cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.php$" | sort -u | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
 echo -e "Total of PHP endpoints -> $(wc -l < /root/results/$domain/fuzzing/php-endpoints)" | notify -bulk -silent
-
-# Vulnerabilities
 
 # XSS
 echo -e "Running dalfox on $domain" | notify -bulk -silent
@@ -44,17 +43,18 @@ echo -e "The dalfox scan have finished -> $(wc -l < /root/results/$domain/vulns/
 
 # Secrets
 echo "Listing secrets with nuclei on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.js$" | sort -u | httpx -silent | nuclei -t exposures -o /root/results/$domain/vulns/exposures.txt
+cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.js$" | sort -u | httpx -silent | nuclei -t exposures -H "X-Forwarded-For: 127.0.0.1" -o /root/results/$domain/vulns/exposures.txt
 echo -e "Nuclei (secrets) has finished -> $(wc -l < /root/results/$domain/vulns/exposures.txt)" | notify -bulk -silent
 
-#LFI (Paramspider)
-#cat /root/results/$domain/wayback_data/all-urls.txt | gf lfi | qsreplace 'FUZZ' | anew lfi-tmp.txt
-#ffuf -w /root/tools/lfi-wordlist.txt 
+# Subdomain takeover (Nuclei)
+echo "Subdomain takeover with nuclei on $domain" | notify -bulk -silent
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | nuclei -t exposures -H "X-Forwarded-For: 127.0.0.1" -rl 40 -c 10 -o /root/results/$domain/vulns/takeovers.txt
+echo "Takeovers -> $(wc -l < /root/results/$domain/vulns/takeovers.txt)" | notify -bulk -silent
 
-#SQLI
+# Lfi -> (Test with burpsuite)
 
-#SSRF
+# Screenshots
+echo "Taking screenshots on $domain" | notify -bulk -silent
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | aquatone -chrome-path /snap/bin/chromium -out /root/results/$domain/aquatone
+echo "The scan has finished on $domain"
 
-# Subdomain takeover
-
-# Fuzzing
