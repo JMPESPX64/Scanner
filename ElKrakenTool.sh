@@ -3,7 +3,7 @@
 domain="$1"
 proxy="socks5://127.0.0.1:1337"
 
-mkdir -p /root/results/$domain/{wayback_data,vulns,ports,aquatone,subdomains,httpx_info,fuzzing,technologies}
+mkdir -p /root/results/$domain/{wayback_data,vulns,ports,aquatone,subdomains,httpx_info,fuzzing,technologies,test_vulns}
 
 # Subdomain enumeration
 echo -e "Listing subdomains on $domain" | notify -bulk -silent
