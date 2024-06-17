@@ -23,13 +23,16 @@ grep -v -f /root/tools/blacklist.txt /root/results/$domain/subdomains/subdomains
 httpx -l /root/results/$domain/subdomains/subdomains.txt -t 100 -silent | tee -a /root/results/$domain/httpx_info/alive_subdomains.txt
 
 # Wayback Data
-cat /root/results/$domain/httpx_output/alive_subdomains.txt | gau --threads 16 --subs --blacklist png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/gau.txt
-cat /root/results/$domain/httpx_output/alive_subdomains.txt | waybackurls | tee -a /root/results/$domain/wayback_data/waybackurls.txt
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | gau --threads 16 --subs --blacklist png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/gau.txt
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | waybackurls | tee -a /root/results/$domain/wayback_data/waybackurls.txt
 waymore -i $domain -mode U -oU /root/results/$domain/wayback_data/waymore.txt
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -ef png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/katana.txt
 paramspider -l /root/results/$domain/httpx_info/alive_subdomains.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | anew /root/results/$domain/wayback_data/all-urls.txt
- 
+
+# SSRF
+
+
 # PHP endpoints
 echo -e "Getting PHP endpoints on $domain" | notify -bulk -silent
 cat /root/results/$domain/wayback_data/all-urls.txt | grep -E "\.php" | sort -u | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
@@ -60,12 +63,10 @@ sqlmap -m sqli.tmp --dbs --proxy=$proxy --batch --risk 3 --level 5 | tee -a /roo
 echo -e "SQLMAP has finished -> $(wc -l < /root/results/$domain/vulns/sql_injection.txt)" | notify -bulk -silent
 rm sqli.tmp
 
-# Open redirect
-echo -e "Listing open redirect on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | gf redirect | uro | tee -a redirect.tmp
-python3 /root/tools/Oralyzer/oralyzer.py -l redirect.tmp
-
-
+# Port scan
+echo -e "Scanning ports with naabu on $domain" | notify -bulk -silent
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | dnsx -a -ro | naabu -silent -top-ports 1000 -exclude-ports 80,443,21,22,25 -o /root/results/$domain/ports/naabu_ports.txt
+echo -e "Naabu has finished on $domain -> $(wc -l < /root/results/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
 
 # Screenshots
 echo "Taking screenshots on $domain" | notify -bulk -silent
