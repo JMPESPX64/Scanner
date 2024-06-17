@@ -22,7 +22,9 @@ rm puredns.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/subdomains/subdomains.txt | sponge /root/results/$domain/subdomains/subdomains.txt
 
 # Alive subdomains
+echo "Running httpx on $domain" | notify -bulk -silent
 httpx -l /root/results/$domain/subdomains/subdomains.txt -t 100 -silent | tee -a /root/results/$domain/httpx_info/alive_subdomains.txt
+echo "$(wc -l < /root/results/$domain/httpx_info/alive_subdomains.txt) Alive subdomains" | notify -bulk -silent
 
 # Wayback Data
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | gau --threads 16 --subs --blacklist png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/gau.txt
