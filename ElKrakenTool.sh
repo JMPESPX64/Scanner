@@ -82,6 +82,7 @@ echo "Running Corsy on $domain" | notify -bulk -silent
 python3 /root/tools/Corsy/corsy.py -i /root/results/$domain/httpx_info/alive_subdomains.txt -o /root/results/$domain/vulns/cors.json
 
 # CRLFUZZ 
+echo "Running crlfuzz on $domain" | notify -bulk -silent
 crlfuzz -l /root/results/$domain/httpx_info/alive_subdomains.txt -o /root/results/$domain/vulns/crlf.txt
 
 # Screenshots
