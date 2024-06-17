@@ -86,6 +86,7 @@ pip3 install -r requirements.txt --break-system-packages
 # paramspider
 git clone https://github.com/devanshbatham/paramspider /root/tools/Paramspider
 cd /root/tools/Paramspider
+mkdir domains
 sed -i 's/results_dir = \"results\"/results_dir = \"\/root\/tools\/Paramspider\/domains\"/' /root/tools/Paramspider/paramspider/main.py
 pip3 install . --break-system-packages
 
