@@ -27,6 +27,7 @@ httpx -l /root/results/$domain/subdomains/subdomains.txt -t 100 -silent | tee -a
 echo "$(wc -l < /root/results/$domain/httpx_info/alive_subdomains.txt) Alive subdomains" | notify -bulk -silent
 
 # Wayback Data
+echo "Listing URLS with mutliple tools (Archive.org + KATANA)" | notify -bulk -silent
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | gau --threads 16 --subs --blacklist png,jpg,jpeg,gif,woff,woff2,ico,svg | tee -a /root/results/$domain/wayback_data/gau.txt
 cat /root/results/$domain/httpx_info/alive_subdomains.txt | waybackurls | tee -a /root/results/$domain/wayback_data/waybackurls.txt
 waymore -i $domain -mode U -oU /root/results/$domain/wayback_data/waymore.txt
