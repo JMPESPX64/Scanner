@@ -5,7 +5,7 @@ apt install -y snapd
 apt install make gcc docker.io -y
 apt install sudo -y
 sudo apt install -y libcurl4-openssl-dev tar
-sudo apt install -y libssl-dev sqlmap
+sudo apt install -y libssl-dev sqlmap wget
 sudo apt install -y jq zip unzip
 sudo apt install -y ruby-full
 sudo apt install -y libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev ruby-dev build-essential libgmp-dev zlib1g-dev
@@ -89,6 +89,9 @@ cd /root/tools/Paramspider
 sed -i 's/results_dir = \"results\"/results_dir = \"\/root\/tools\/Paramspider\"/' /root/tools/Paramspider/paramspider/main.py
 pip3 install . --break-system-packages
 
+# Nuclei tech detect
+cd /root/tools
+wget https://raw.githubusercontent.com/projectdiscovery/nuclei-templates/master/technologies/tech-detect.yaml
 
 # GF-PATTERNS
 mkdir /root/.gf
