@@ -30,9 +30,9 @@ cat /root/results/$domain/httpx_info/alive_subdomains.txt | katana -jc -d 5 -ef 
 paramspider -l /root/results/$domain/httpx_info/alive_subdomains.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/wayback_data/*.txt | anew /root/results/$domain/wayback_data/all-urls.txt
  
-# Php endpoints
+# PHP endpoints
 echo -e "Getting PHP endpoints on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.php$" | sort -u | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
+cat /root/results/$domain/wayback_data/all-urls.txt | grep -E "\.php" | sort -u | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
 echo -e "Total of PHP endpoints -> $(wc -l < /root/results/$domain/fuzzing/php-endpoints)" | notify -bulk -silent
 
 # XSS
@@ -52,6 +52,20 @@ cat /root/results/$domain/httpx_info/alive_subdomains.txt | nuclei -t exposures 
 echo "Takeovers -> $(wc -l < /root/results/$domain/vulns/takeovers.txt)" | notify -bulk -silent
 
 # Lfi -> (Test with burpsuite)
+
+# SQLI
+echo -e "Listing sql injections on $domain" | notify -bulk -silent
+cat /root/results/$domain/wayback_data/all-urls.txt | gf sqli | qsreplace 'FUZZ' | sort -u | uro | tee -a sqli.tmp
+sqlmap -m sqli.tmp --dbs --proxy=$proxy --batch --risk 3 --level 5 | tee -a /root/results/$domain/vulns/sql_injection.txt
+echo -e "SQLMAP has finished -> $(wc -l < /root/results/$domain/vulns/sql_injection.txt)" | notify -bulk -silent
+rm sqli.tmp
+
+# Open redirect
+echo -e "Listing open redirect on $domain" | notify -bulk -silent
+cat /root/results/$domain/wayback_data/all-urls.txt | gf redirect | uro | tee -a redirect.tmp
+python3 /root/tools/Oralyzer/oralyzer.py -l redirect.tmp
+
+
 
 # Screenshots
 echo "Taking screenshots on $domain" | notify -bulk -silent
