@@ -16,7 +16,7 @@ echo "$domain" | anew /root/results/$domain/subdomains/subdomains.txt
 
 # Subdomain bruteforce (Puredns)
 echo -e "Brute force with puredns on $domain" | notify -bulk -silent
-puredns -r /root/tools/ElKraken/Tools/resolvers.txt /usr/share/seclists/Discovery/DNS/dns-Jhaddix.txt $domain --write puredns.txt
+puredns bruteforce -r /root/tools/ElKraken/Tools/resolvers.txt /usr/share/seclists/Discovery/DNS/dns-Jhaddix.txt $domain --write puredns.txt
 cat puredns.txt | anew /root/results/$domain/subdomains/subdomains.txt
 grep -v -f /root/tools/blacklist.txt /root/results/$domain/subdomains/subdomains.txt | sponge /root/results/$domain/subdomains/subdomains.txt
 
