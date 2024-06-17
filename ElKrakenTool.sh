@@ -42,7 +42,7 @@ echo -e "Total of PHP endpoints -> $(wc -l < /root/results/$domain/fuzzing/php-e
 
 # XSS
 echo -e "Running dalfox on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | gf xss | uro | Gxss -p FUZZ -o /root/results/$domain/test_vulns/XSS.txt
+cat /root/results/$domain/wayback_data/all-urls.txt /root/tools/Paramspider/domains/*.txt | gf xss | uro | Gxss -p FUZZ -o /root/results/$domain/test_vulns/XSS.txt
 dalfox file /root/results/$domain/test_vulns/XSS.txt --waf-evasion --skip-mining-all --skip-headless -H "X-Forwarded-For: 127.0.0.1" --only-poc --proxy $proxy -o /root/results/$domain/vulns/XSS.txt
 echo -e "The dalfox scan have finished -> $(wc -l < /root/results/$domain/vulns/XSS.txt) results"
 
