@@ -100,12 +100,13 @@ git clone https://github.com/1ndianl33t/Gf-Patterns /root/tools/Gf-Patterns
 mv /root/tools/Gf-Patterns/*.json /root/.gf
 
 # Custom scripts
-git clone https://github.com/R-s0n/Custom_Vuln_Scan_Templates /root/tools/Custom_Vuln_Scan_Templates
+#git clone https://github.com/R-s0n/Custom_Vuln_Scan_Templates /root/tools/Custom_Vuln_Scan_Templates
 
 # Go packages
 go install -v github.com/projectdiscovery/chaos-client/cmd/chaos@latest
-#go install github.com/Emoe/kxss@latest
+go install github.com/Emoe/kxss@latest
 go install -v github.com/tomnomnom/anew@latest
+go install github.com/takshal/freq@latest
 go install github.com/lc/gau/v2/cmd/gau@latest
 go install github.com/projectdiscovery/katana/cmd/katana@latest
 go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
