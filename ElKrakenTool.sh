@@ -29,6 +29,7 @@ httpx -l /root/results/$domain/subdomains/subdomains.txt -silent | tee -a /root/
 echo -e "Alive subdomains $(wc -l < $alive_subdomains_path)" | notify -bulk -silent
 
 # Wayback Data
+echo "Wayback Data on $domain" | notify -bulk -silent
 cat $alive_subdomains_path | gau --threads 16 --subs --blacklist jpg,png,woff,woff2,ico,svg,gif,jpeg | tee -a $wayback_data_path/gau.txt
 cat $alive_subdomains_path | waybackurls | tee -a $wayback_data_path/waybackurls.txt
 waymore -i $domain -mode U -oU $wayback_data_path/waymore.txt
