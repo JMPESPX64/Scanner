@@ -37,33 +37,26 @@ cat /root/tools/Paramspider/domains/*.txt | anew /root/results/$domain/wayback_d
 
 # PHP endpoints
 echo -e "Getting PHP endpoints on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | grep -E "\.php" | sort -u | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
+cat /root/results/$domain/wayback_data/all-urls.txt | grep -E "\.php" | httpx -silent | anew /root/results/$domain/fuzzing/php-endpoints.txt
 echo -e "Total of PHP endpoints -> $(wc -l < /root/results/$domain/fuzzing/php-endpoints)" | notify -bulk -silent
 
 # XSS
-echo -e "Running dalfox on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt /root/tools/Paramspider/domains/*.txt | gf xss | uro | Gxss -p FUZZ -o /root/results/$domain/test_vulns/XSS.txt
-dalfox file /root/results/$domain/test_vulns/XSS.txt --waf-evasion --skip-mining-all --skip-headless -H "X-Forwarded-For: 127.0.0.1" --only-poc --proxy $proxy -o /root/results/$domain/vulns/XSS.txt
-echo -e "The dalfox scan have finished -> $(wc -l < /root/results/$domain/vulns/XSS.txt) results"
+echo -e "Running Kxss on $domain" | notify -bulk -silent
+cat /root/results/$domain/wayback_data/all-urls.txt /root/tools/Paramspider/domains/*.txt | gf xss | uro | kxss | grep -v "\[\]" | tee -a /root/results/$domain/vulns/XSS.txt
+echo "Kxss has finished on $domain" | notify -bulk -silent
 
 # Secrets
 echo "Listing secrets with nuclei on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.js$" | sort -u | httpx -silent | nuclei -t exposures -H "X-Forwarded-For: 127.0.0.1" -o /root/results/$domain/vulns/exposures.txt
+cat /root/results/$domain/wayback_data/all-urls.txt | grep "\.js$" | httpx -silent | nuclei -t exposures -rl 40 -c 20 -H "X-Forwarded-For: 127.0.0.1" -o /root/results/$domain/vulns/exposures.txt
 echo -e "Nuclei (secrets) has finished -> $(wc -l < /root/results/$domain/vulns/exposures.txt)" | notify -bulk -silent
 
 # Subdomain takeover (Nuclei)
 echo "Subdomain takeover with nuclei on $domain" | notify -bulk -silent
-cat /root/results/$domain/httpx_info/alive_subdomains.txt | nuclei -t exposures -H "X-Forwarded-For: 127.0.0.1" -rl 40 -c 10 -o /root/results/$domain/vulns/takeovers.txt
+cat /root/results/$domain/httpx_info/alive_subdomains.txt | nuclei -t takeovers -H "X-Forwarded-For: 127.0.0.1" -rl 40 -c 10 -o /root/results/$domain/vulns/takeovers.txt
 echo "Takeovers -> $(wc -l < /root/results/$domain/vulns/takeovers.txt)" | notify -bulk -silent
 
 # Lfi -> (Test with burpsuite)
 
-# SQLI
-echo -e "Listing sql injections on $domain" | notify -bulk -silent
-cat /root/results/$domain/wayback_data/all-urls.txt | gf sqli | qsreplace 'FUZZ' | uro | tee -a sqli.tmp
-sqlmap -m sqli.tmp --dbs --proxy=$proxy --batch --headers="X-Forwarded-For: 127.0.0.1" --risk 2 --level 3 --delay=0.5 | tee -a /root/results/$domain/vulns/sql_injection.txt
-echo -e "SQLMAP has finished -> $(wc -l < /root/results/$domain/vulns/sql_injection.txt)" | notify -bulk -silent
-rm sqli.tmp
 
 # Port scan
 echo -e "Scanning ports with naabu on $domain" | notify -bulk -silent
