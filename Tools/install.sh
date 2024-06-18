@@ -5,7 +5,7 @@ apt install -y snapd
 apt install make gcc docker.io -y
 apt install sudo -y
 sudo apt install -y libcurl4-openssl-dev tar
-sudo apt install -y libssl-dev sqlmap wget
+sudo apt install -y libssl-dev sqlmap wget proxychains4
 sudo apt install -y jq zip unzip
 sudo apt install -y ruby-full
 sudo apt install -y libcurl4-openssl-dev libxml2 libxml2-dev libxslt1-dev ruby-dev build-essential libgmp-dev zlib1g-dev
