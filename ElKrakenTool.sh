@@ -3,7 +3,7 @@
 domain="$1"
 proxy="socks5://127.0.0.1:1337"
 
-mkdir -p /root/reseults/$domain/{httpx_info,subdomains,fuzzing,vulns,ports,wayback_data}
+mkdir -p /root/reseults/$domain/{httpx_info,subdomains,fuzzing,vulns,ports,wayback_data,aquatone}
 
 alive_subdomains_path="/root/results/$domain/httpx_info/alive_subdomains.txt"
 wayback_data_path="/root/results/$domain/wayback_data"
@@ -70,3 +70,8 @@ echo "Dirsearch has finished on $domain" | notify -bulk -silent
 echo "Scanning ports on $domain" | notify -bulk -silent
 cat $alive_subdomains_path | dnsx -a -ro | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 -o /root/results/$domain/ports/naabu_ports.txt
 echo "Naabu has finished on $domain -> $(wc -l < /root/results/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
+
+# Screeshots
+echo "Taking screeshots on $domain" | notify -bulk -silent
+cat $alive_subdomains_path | aquatone -chrome-path /snap/bin/chromium -o /root/results/$domain/aquatone
+echo "Aquatone has finished on $domain" | notify -bulk -silent
