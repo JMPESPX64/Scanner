@@ -117,8 +117,8 @@ go install github.com/tomnomnom/qsreplace@latest
 #go install -v github.com/LukaSikic/subzy@latest
 go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
-go install github.com/hahwul/dalfox/v2@latest
-go install github.com/KathanP19/Gxss@latest
+#go install github.com/hahwul/dalfox/v2@latest
+#go install github.com/KathanP19/Gxss@latest
 go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
 go install github.com/d3mondev/puredns/v2@latest
 go install -v github.com/projectdiscovery/notify/cmd/notify@latest
