@@ -68,8 +68,8 @@ echo "Dirsearch has finished on $domain" | notify -bulk -silent
 
 # Port scan
 echo "Scanning ports on $domain" | notify -bulk -silent
-cat $alive_subdomains_path | dnsx -a -ro | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 -o /root/results/$domain/ports/naabu_ports.txt
-echo "Naabu has finished on $domain -> $(wc -l < /root/results/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
+cat $alive_subdomains_path | dnsx -a -ro | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 | nuclei -t cves -rl 40 -c 20 -p $proxy -o /root/results/$domain/vulns/nuclei_ports_scan_cves.txt
+echo "The nuclei scan has finished on $domain -> $(wc -l < /root/results/$domain/vulns/nuclei_ports_scan_cves.txt)" | notify -bulk -silent
 
 # Screeshots
 echo "Taking screeshots on $domain" | notify -bulk -silent
