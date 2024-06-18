@@ -61,6 +61,11 @@ echo "Listing LFI on $domain with nuclei" | notify -bulk -silent
 cat $wayback_data_path/*.txt $param_spider_path/*.txt | gf lfi | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | uro | nuclei -tags lfi -rl 40 -c 20 -p $proxy -o $vulns_path/LFI.txt
 echo "Nuclei LFI has finished on $domain -> $(wc -l < $vulns_path/LFI.txt) results" | notify -bulk -silent
 
+# Takevoers
+echo "Running Nuclei for subdomain takeover on $domain" | notify -bulk -silent
+cat $alive_subdomains_path | nuclei -t takeovers -rl 40 -c 30 -o $vulns_path/takeovers.txt
+echo "Subdomain takeovers number -> $(wc -l < $vulns_path/takeovers.txt)" | notify -bulk -silent
+
 # Fuzzing
 echo "Running dirsearch on $domain" | notify -bulk -silent
 dirsearch -w $wordlist_dir -exclude 404,403,401,400 -l $alive_subdomains_path --proxy $proxy --crawl -o /root/results/$domain/fuzzing/dirsearch.txt
@@ -68,7 +73,7 @@ echo "Dirsearch has finished on $domain" | notify -bulk -silent
 
 # Port scan
 echo "Scanning ports on $domain" | notify -bulk -silent
-cat $alive_subdomains_path | dnsx -a -ro | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 | nuclei -t cves -rl 40 -c 20 -p $proxy -o /root/results/$domain/vulns/nuclei_ports_scan_cves.txt
+cat $alive_subdomains_path | dnsx -a -ro | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 -silent | nuclei -t cves -rl 40 -c 20 -p $proxy -o $vulns_path/nuclei_ports_scan_cves.txt
 echo "The nuclei scan has finished on $domain -> $(wc -l < /root/results/$domain/vulns/nuclei_ports_scan_cves.txt)" | notify -bulk -silent
 
 # Screeshots
