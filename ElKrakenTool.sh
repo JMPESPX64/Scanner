@@ -3,7 +3,7 @@
 domain="$1"
 proxy="socks5://127.0.0.1:1337"
 
-mkdir -p /root/reseults/$domain/{httpx_info,subdomains,fuzzing,vulns,ports,wayback_data,aquatone}
+mkdir -p /root/results/$domain/{httpx_info,subdomains,fuzzing,vulns,ports,wayback_data,aquatone}
 
 alive_subdomains_path="/root/results/$domain/httpx_info/alive_subdomains.txt"
 wayback_data_path="/root/results/$domain/wayback_data"
