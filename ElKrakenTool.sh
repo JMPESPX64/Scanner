@@ -46,7 +46,8 @@ echo "Kxss has finished -> $(cat $vulns_path/XSS.txt | grep '<' | wc -l) posible
 
 # XSS (Freq)
 echo "Running freq on $domain" | notify -bulk -silent
-cat $wayback_data_path/*.txt $param_spider_path/*.txt | grep "=" | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq | egrep -v 'Not' | anew $vulns_path/freq.txt | notify -bulk -silent
+#cat $wayback_data_path/*.txt $param_spider_path/*.txt | grep "=" | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq | egrep -v 'Not' | anew $vulns_path/freq.txt | notify -bulk -silent
+proxychains4 -q bash -c "echo Y2F0ICR3YXliYWNrX2RhdGFfcGF0aC8qLnR4dCAkcGFyYW1fc3BpZGVyX3BhdGgvKi50eHQgfCBncmVwICI9IiB8IGVncmVwIC1pdiAiLihqcGd8anBlZ3xnaWZ8Y3NzfHRpZnx0aWZmfHBuZ3x0dGZ8d29mZnx3b2ZmMnxpY29ufHBkZnxzdmd8dHh0fGpzKSIgfCB1cm8gfCBxc3JlcGxhY2UgJyI+PGltZyBzcmM9eCBvbmVycm9yPWFsZXJ0KDEpOz4nIHwgZnJlcSB8IGVncmVwIC12ICdOb3QnIHwgYW5ldyAkdnVsbnNfcGF0aC9mcmVxLnR4dCB8IG5vdGlmeSAtYnVsayAtc2lsZW50Cg== | base64 -d | bash"
 echo "Freq has finished on $domain"
 
 # Secrets
