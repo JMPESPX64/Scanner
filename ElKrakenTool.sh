@@ -35,8 +35,6 @@ waymore -i $domain -mode U -oU $wayback_data_path/waymore.txt
 cat $alive_subdomains_path | katana -jc -d 5 -silent | tee -a $wayback_data_path/katana.txt
 paramspider -l $alive_subdomains_path
 
-# Nuclei custom templates
-
 # XSS
 echo "Running kxss on $domain" | notify -bulk -silent
 cat $wayback_data_path/*.txt | gf xss | uro | kxss | grep -v "\[\]" | tee -a $vulns_path/XSS.txt
@@ -45,7 +43,7 @@ echo "Kxss has finished -> $(cat $vulns_path/XSS.txt | grep '<' | wc -l) posible
 
 # XSS (Freq)
 echo "Running freq on $domain" | notify -bulk -silent
-cat $wayback_data_path/*.txt $param_spider_path/*.txt | grep "=" | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq
+cat $wayback_data_path/*.txt $param_spider_path/*.txt | grep "=" | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | uro | qsreplace '"><img src=x onerror=alert(1);>' | freq | egrep -v 'Not' | anew $vulns_path/freq.txt | notify -bulk -silent
 echo "Freq has finished on $domain"
 
 # Secrets
@@ -65,4 +63,6 @@ dirsearch -w $wordlist_dir -exclude 404,403,401,400 -l $alive_subdomains_path --
 echo "Dirsearch has finished on $domain" | notify -bulk -silent
 
 # Port scan
-cat $alive_subdomains_path | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 -o /root/results/$domain/ports/naabu_ports.txt
+echo "Scanning ports on $domain" | notify -bulk -silent
+cat $alive_subdomains_path | dnsx -a -ro | naabu -top-ports 1000 -exclude-ports 80,443,21,22,25 -o /root/results/$domain/ports/naabu_ports.txt
+echo "Naabu has finished on $domain -> $(wc -l < /root/results/$domain/ports/naabu_ports.txt)" | notify -bulk -silent
