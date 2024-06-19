@@ -52,7 +52,7 @@ echo "Freq has finished on $domain"
 
 # Secrets
 echo -e "Runnig nuclei for list secrets on $domain" | notify -bulk -silent
-cat $wayback_data_path/*.txt | grep "\.js$" | httpx -silent | tee -a $wayback_data_path/js.txt
+cat $wayback_data_path/*.txt | grep "\.js$" | httpx -silent -mc 200 | tee -a $wayback_data_path/js.txt
 nuclei -l $wayback_data_path/js.txt -rl 40 -c 20 -t exposures -o $vulns_path/secrets.txt
 echo "Nuclei secrets has finished on $domain -> $(wc -l < $vulns_path/secrets.txt)" | notify -bulk -silent
 
