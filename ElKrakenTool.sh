@@ -21,7 +21,7 @@ echo "Total passive subdomains found on $domain -> $(wc -l < /root/results/$doma
 
 # ASN'S
 echo "Listing ASN'S with DNSX and ASNMAP on $domain" | notify -bulk -silent
-echo "$domain" | dnsx -silent -asn | awk -F "[" '{print $2}' | cut -d ',' -f1 | asnmap -silent | dnsx -ptr -resp -silent | awk '{print $3}' | tr -d '[]' | tee -a asnmap.txt
+cat /root/results/$domain/subdomains/subdomains.txt | dnsx -silent -asn | awk -F "[" '{print $2}' | cut -d ',' -f1 | asnmap -silent | dnsx -ptr -resp -silent | awk '{print $3}' | tr -d '[]' | tee -a asnmap.txt
 cat asnmap.txt | anew /root/results/$domain/subdomains/subdomains.txt
 echo "Total subdomains after ASN's found on $domain -> $(wc -l < /root/results/$domain/subdomains/subdomains.txt)" | notify -bulk -silent
 
