@@ -19,7 +19,13 @@ assetfinder --subs-only $domain | grep "\.$domain$" | sed 's/*.//' | anew /root/
 amass -passive -d $domain -noalts -norecursive | anew /root/results/$domain/subdomains/subdomains.txt
 echo "Total passive subdomains found on $domain -> $(wc -l < /root/results/$domain/subdomains/subdomains.txt)" | notify -bulk -silent
 
-# Bruteforce
+# ASN'S
+echo "Listing ASN'S with DNSX and ASNMAP on $domain" | notify -bulk -silent
+echo "$domain" | dnsx -silent -asn | awk -F "[" '{print $2}' | cut -d ',' -f1 | asnmap -silent | dnsx -ptr -resp -silent | awk '{print $3}' | tr -d '[]' | tee -a asnmap.txt
+cat asnmap.txt | anew /root/results/$domain/subdomains/subdomains.txt
+echo "Total subdomains after ASN's found on $domain -> $(wc -l < /root/results/$domain/subdomains/subdomains.txt)" | notify -bulk -silent
+
+# Bruteforce (puredns)
 echo "Bruteforce with puredns on $domain" | notify -bulk -silent
 puredns bruteforce -r /root/tools/ElKraken/Tools/resolvers.txt /usr/share/seclists/Discovery/DNS/dns-Jhaddix.txt $domain --write puredns.txt
 cat puredns.txt | anew /root/results/$domain/subdomains/subdomains.txt
@@ -40,3 +46,7 @@ paramspider -l $alive_subdomains_path
 
 # ----------------------------------------------------------------- Vulnerabilities ------------------------------------------------------------------------------------
 
+# XSS
+#LFI
+#SQLI
+#SSRF
