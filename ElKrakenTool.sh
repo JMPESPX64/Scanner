@@ -52,3 +52,13 @@ echo "Nuclei fuzzing templates has finished on $domain -> $(wc -l < $vulns_path/
 echo "Listing secrets with nuclei on $domain" | notify -bulk -silent
 cat $wayback_data_path/*.txt $param_spider_path/*.txt | grep "\.js$" | sort -u | httpx -silent | tee -a $wayback_data_path/js.txt
 nuclei -l $wayback_data_path/js.txt -t exposures -o $vulns_path/secrets.txt
+
+# Stop doxycannon
+if [ "$(tail -n 1 /root/tools/domains.txt)" == "$domain" ] ; then 
+  cd /root/tools/ElKraken/Tools/doxycannon
+  python3 doxycannon.py --down
+  docker rm $(docker ps -a -q)
+  docker rmi $(docker images -q)
+else
+  echo ""
+fi
