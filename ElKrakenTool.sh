@@ -39,14 +39,14 @@ cat $alive_subdomains_path | katana -jc -d 5 -silent | tee -a $wayback_data_path
 paramspider -l $alive_subdomains_path
 
 # ----------------------------------------------------------------- Vulnerabilities ------------------------------------------------------------------------------------
-echo "Listing XSS on $domain with Kxss" | notify -bulk -silent
-cat $wayback_data_path/*.txt $param_spider_path/*.txt | gf xss | uro | kxss | grep -v "\[\]" | tee -a $vulns_path/XSS.txt
-echo "Kxss has finished on $domain" | notify -bulk -sileent
+#echo "Listing XSS on $domain with Kxss" | notify -bulk -silent
+#cat $wayback_data_path/*.txt $param_spider_path/*.txt | gf xss | uro | kxss | grep -v "\[\]" | tee -a $vulns_path/XSS.txt
+#echo "Kxss has finished on $domain" | notify -bulk -sileent
 
 # Fuzzing templates
-echo "Runnig fuzzing templates with nuclei on $domain" | notify -bulk -silent
-cat $wayback_data_path/*.txt $param_spider_path/*.txt | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | grep "=" | uro | nuclei -t /root/tools/fuzzing-templates -p $proxy -rl 40 -c 30 -dast -o $vulns_path/nuclei_fuzzing_templates
-echo "Nuclei fuzzing templates has finished on $domain -> $(wc -l < $vulns_path/nuclei_fuzzing_templates) results" | notify -bulk -silent
+#echo "Runnig fuzzing templates with nuclei on $domain" | notify -bulk -silent
+#cat $wayback_data_path/*.txt $param_spider_path/*.txt | egrep -iv ".(jpg|jpeg|gif|css|tif|tiff|png|ttf|woff|woff2|icon|pdf|svg|txt|js)" | grep "=" | uro | nuclei -t /root/tools/fuzzing-templates -p $proxy -rl 40 -c 30 -dast -o $vulns_path/nuclei_fuzzing_templates
+#echo "Nuclei fuzzing templates has finished on $domain -> $(wc -l < $vulns_path/nuclei_fuzzing_templates) results" | notify -bulk -silent
 
 # Secrets
 echo "Listing secrets with nuclei on $domain" | notify -bulk -silent
